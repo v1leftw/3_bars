@@ -9,7 +9,7 @@ def load_data(filepath):
         return json.load(_f)
 
 
-def parse_data(data):
+def parse_data(json_data):
     _dict = {}
     _arr = []
     for elem in data['features']:
@@ -59,8 +59,8 @@ def get_closest_bar(parsed_data, longitude, latitude):
 
 
 if __name__ == '__main__':
-    json_data = load_data(_filepath)
-    parsed_json_data = parse_data(json_data)
+    json_data_from_file = load_data(_filepath)
+    parsed_json_data = parse_data(json_data_from_file)
 
     while True:
         try:
