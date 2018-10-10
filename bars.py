@@ -21,36 +21,36 @@ def parse_data(data):
     return _arr
 
 
-def get_seats(pdata):
-    seatsCount = pdata["sCount"]
-    return seatsCount
+def get_seats(parsed_data):
+    seats_count = parsed_data["sCount"]
+    return seats_count
 
 
-def get_biggest_bar(pdata):
-    return max(pdata, key=get_seats)['name']
+def get_biggest_bar(parsed_data):
+    return max(parsed_data, key=get_seats)['name']
 
 
-def get_smallest_bar(pdata):
-    return min(pdata, key=get_seats)['name']
+def get_smallest_bar(parsed_data):
+    return min(parsed_data, key=get_seats)['name']
 
 
 def get_distance(lng_curr, ltt_curr, lng_src, ltt_src):
-    R = 6371.0  # earth radius
+    earth_radius = 6371.0  # earth radius
     ltt_curr = radians(ltt_curr)
     ltt_src = radians(ltt_src)
     lng_src = radians(lng_src)
     lng_curr = radians(lng_curr)
     diff_longitude = lng_src - lng_curr
     diff_latitude = ltt_src - ltt_curr
-    a = (sin(diff_latitude))**2+cos(ltt_src)*cos(ltt_curr)*(sin(diff_longitude/2))**2
-    c = 2 * atan2 (sqrt(a), sqrt(1-a))
-    return R*c
+    first_multiplier = (sin(diff_latitude))**2+cos(ltt_src)*cos(ltt_curr)*(sin(diff_longitude/2))**2
+    second_multiplier = 2 * atan2(sqrt(first_multiplier), sqrt(1-first_multiplier))
+    return earth_radius*second_multiplier
 
 
-def get_closest_bar(pdata, longitude, latitude):
+def get_closest_bar(parsed_data, longitude, latitude):
     distance = 6371*2  # Earth radius * 2
     bar_name = ""
-    for elem in pdata:
+    for elem in parsed_data:
         _distance = get_distance(longitude, latitude, elem["longitude"], elem["latitude"])
         if _distance < distance:
             distance = _distance
@@ -59,8 +59,8 @@ def get_closest_bar(pdata, longitude, latitude):
 
 
 if __name__ == '__main__':
-    _data = load_data(_filepath)
-    _pdata = parse_data(_data)
+    json_data = load_data(_filepath)
+    parsed_json_data = parse_data(json_data)
 
     while True:
         try:
@@ -68,13 +68,13 @@ if __name__ == '__main__':
             longitude = input("Longitude:")
             latitude = input("Latitude:")
             print("Ur coordinates: ", longitude, " ", latitude)
-            print("closest: ", get_closest_bar(_pdata, float(longitude), float(latitude)))
+            print("closest: ", get_closest_bar(parsed_json_data, float(longitude), float(latitude)))
         except ValueError:
             print("please input number in correct format. Example: 34.3234235")
             continue
         else:
             break
 
-    print("Bar with most seats: ", get_biggest_bar(_pdata))
-    print("Bar with least seats: ", get_smallest_bar(_pdata))
+    print("Bar with most seats: ", get_biggest_bar(parsed_json_data))
+    print("Bar with least seats: ", get_smallest_bar(parsed_json_data))
 
