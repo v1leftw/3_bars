@@ -1,17 +1,31 @@
-# Ближайшие бары
+## Description ##
 
-Скрипт находит бары согласно заданию:
-- ближайший
-- с самым большим количеством мест
-- с наименьшим количеством мест (первое вхождение)
+That script was built to get informartion about bar that user interested in from JSON-file.
+Information that user can get:
+- Bar with the most seats
+- Bar with the least seats
+- Closest bar to user
 
-Пример выполнения:
->Input your coordinates
-Longitude:34.34253453
-Latitude:64.34243243
-Ur coordinates:  34.34253453   64.34243243
-closest:  Бар «Адамов Роман Анатольевич»
+JSON can be taken from [data.mos.ru](https://data.mos.ru)
+
+## Motivation ##
+
+Project has been done in learning purposes - [task is here](https://devman.org/challenges/3/)
+
+## Installation ##
+
+```
+bars.py -file PATH_TO_JSON
+```
+
+Example: 
+```
+Input your coordinates
+Longitude:32.23452
+Latitude:45.5324
+Ur coordinates:  32.23452   45.5324
+closest:  Staropramen  distance is:    2197.98 km
 Bar with most seats:  Спорт бар «Красная машина»
 Bar with least seats:  БАР. СОКИ
+```
 
-**Проверок на наличие файла - НЕТ**
