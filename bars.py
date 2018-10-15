@@ -3,103 +3,93 @@ from math import sin, cos, atan2, sqrt, radians
 import argparse
 import os.path
 
-EARTH_RADIUS = 6371
-
 
 def load_data_from_json(filepath):
-    if os.path.isfile(filepath):
-        try:
-            with open(filepath, "r", encoding="utf8") as json_file:
-                return json.load(json_file)
-        except ValueError as exception:
-            # raising different exception to handle ValueError from input
-            raise TypeError from exception
-    else:
-        raise FileNotFoundError
+    try:
+        os.path.isfile(filepath)
+        with open(filepath, "r", encoding="utf8") as json_file:
+            return json.load(json_file)
+    except ValueError:
+        return None
 
 
-def get_items_from_json(parsed_data):
-    bars_data = parsed_data["features"]
-    return bars_data
+def get_bars_from_dict(parsed_data):
+    bars = parsed_data["features"]
+    return bars
 
 
 def get_biggest_bar(parsed_data):
-    return max(get_items_from_json(parsed_data),
-               key=lambda item: item["properties"]["Attributes"]["SeatsCount"])
+    return max(get_bars_from_dict(parsed_data),
+               key=lambda item:
+               item["properties"]["Attributes"]["SeatsCount"])
 
 
 def get_smallest_bar(parsed_data):
-    return min(get_items_from_json(parsed_data),
-               key=lambda item: item["properties"]["Attributes"]["SeatsCount"])
+    return min(get_bars_from_dict(parsed_data),
+               key=lambda item:
+               item["properties"]["Attributes"]["SeatsCount"])
 
 
-# https://stackoverflow.com/questions/19412462/getting-distance-between-two-points-based-on-latitude-longitude
-'''
-    function get_distance():
-    ltt_curr = current latitude (user-inputted)
-    ltt_scr = latitude from json-file (source)
-    lng_curr = current longitude (user-inputted)
-    lng_src = latitude from json-file (source)
-'''
-
-
-def get_distance(lng_curr, ltt_curr, lng_src, ltt_src):
-    ltt_curr = radians(ltt_curr)
-    ltt_src = radians(ltt_src)
-    lng_src = radians(lng_src)
-    lng_curr = radians(lng_curr)
-    diff_lng = lng_src - lng_curr
-    diff_ltt = ltt_src - ltt_curr
+def get_distance(lon_user, lat_user, lon_src, lat_src):
+    # https://stackoverflow.com/a/19412565/8482475
+    earth_radius = 6371
+    lat_user = radians(lat_user)
+    lat_src = radians(lat_src)
+    lon_src = radians(lon_src)
+    lon_user = radians(lon_user)
+    diff_lon = lon_src - lon_user
+    diff_lat = lat_src - lat_user
     first_multiplier = \
-        (sin(diff_ltt))**2+cos(ltt_src)*cos(ltt_curr)*(sin(diff_lng/2))**2
+        (sin(diff_lat))**2+cos(lat_src)*cos(lat_user)*(sin(diff_lon/2))**2
     second_multiplier = \
         2 * atan2(sqrt(first_multiplier), sqrt(1-first_multiplier))
-    return EARTH_RADIUS*second_multiplier
+    return earth_radius*second_multiplier
 
 
 def get_closest_bar(parsed_data, longitude, latitude):
-    distance = EARTH_RADIUS*2  # Polar radius
-    bar = {}
-    for elem in get_items_from_json(parsed_data):
-        distance_to_closest_bar = \
-            get_distance(longitude, latitude,
-                         elem["geometry"]["coordinates"][0],
-                         elem["geometry"]["coordinates"][1])
-        if distance_to_closest_bar < distance:
-            distance = distance_to_closest_bar
-            bar = elem
-    return bar, distance
+    return min(get_bars_from_dict(parsed_data),
+               key=lambda item:
+               get_distance(longitude, latitude,
+                            item["geometry"]["coordinates"][0],
+                            item["geometry"]["coordinates"][1]))
 
 
-def get_path_to_file():
+def print_bar(bar):
+    # if will need more items, we will just return more (or return dict)
+    name = bar["properties"]["Attributes"]["Name"]
+    return name
+
+
+def get_args():
     parser = argparse.ArgumentParser(description="Enter the path directory:")
     parser.add_argument("-file", required=True, help="Path to file")
-    path = parser.parse_args()
-    return path.file
+    return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
-        json_data = load_data_from_json(get_path_to_file())
-        print("Input your coordinates")
-        user_longitude = input("Longitude:")
-        user_latitude = input("Latitude:")
-        closest_bar, distance_to_bar = \
-            get_closest_bar(json_data,
-                            float(user_longitude), float(user_latitude))
-        print("Ur coordinates: ", user_longitude, " ", user_latitude)
-        print("closest: ", closest_bar["properties"]["Attributes"]["Name"],
-              " distance is: ",
-              "{:9.2f}".format(distance_to_bar), "km")
-        biggest_bar = get_biggest_bar(json_data)
-        print("Bar with most seats: ",
-              biggest_bar["properties"]["Attributes"]["Name"])
-        smallest_bar = get_smallest_bar(json_data)
-        print("Bar with least seats: ",
-              smallest_bar["properties"]["Attributes"]["Name"])
+        path = get_args().file
+        bars_data = load_data_from_json(path)
     except FileNotFoundError:
         print("File can not be found. Make sure you entered right path")
-    except TypeError:
-        print("It is not a JSON-file")
-    except ValueError:
-        print("Please input number in correct format. Example: 34.342554")
+    else:
+        if bars_data is None:
+            print("That is not JSON-file")
+        else:
+            try:
+                print("Input your coordinates")
+                user_longitude = float(input("Longitude:"))
+                user_latitude = float(input("Latitude:"))
+                closest_bar = get_closest_bar(bars_data,
+                                              user_longitude,
+                                              user_latitude)
+                print("Ur coordinates: ", user_longitude, " ", user_latitude)
+                print("closest: ", print_bar(closest_bar))
+            except ValueError:
+                print("Your coordinates was input in wrong format. ",
+                      "Example: 34.34256")
+
+            biggest_bar = get_biggest_bar(bars_data)
+            print("Bar with most seats: ", print_bar(biggest_bar))
+            smallest_bar = get_smallest_bar(bars_data)
+            print("Bar with least seats: ", print_bar(smallest_bar))

@@ -1,6 +1,6 @@
 ## Description ##
 
-That script was built to get informartion about bar that user interested in from JSON-file.
+That script was built to get information about bar that user interested in from JSON-file.
 Information that user can get:
 - Bar with the most seats
 - Bar with the least seats
@@ -14,9 +14,13 @@ Project has been done in learning purposes - [task is here](https://devman.org/c
 
 ## Installation ##
 
+Python 3.5 needed
+
 ```
 bars.py -file PATH_TO_JSON
 ```
+
+Script will ask to provide your coordinates to search closest bar to you
 
 Example: 
 ```
@@ -24,7 +28,7 @@ Input your coordinates
 Longitude:32.23452
 Latitude:45.5324
 Ur coordinates:  32.23452   45.5324
-closest:  Staropramen  distance is:    2197.98 km
+closest:  Staropramen
 Bar with most seats:  Спорт бар «Красная машина»
 Bar with least seats:  БАР. СОКИ
 ```
