@@ -5,12 +5,9 @@ import os.path
 
 
 def load_data_from_json(filepath):
-    try:
-        os.path.isfile(filepath)
-        with open(filepath, "r", encoding="utf8") as json_file:
-            return json.load(json_file)
-    except ValueError:
-        return None
+    os.path.isfile(filepath)
+    with open(filepath, "r", encoding="utf8") as json_file:
+        return json.load(json_file)
 
 
 def get_bars_from_dict(parsed_data):
@@ -56,8 +53,8 @@ def get_closest_bar(parsed_data, longitude, latitude):
 
 def print_bar(bar):
     # if will need more items, we will just return more (or return dict)
-    name = bar["properties"]["Attributes"]["Name"]
-    return name
+    bar_name = bar["properties"]["Attributes"]["Name"]
+    return bar_name
 
 
 def get_args():
@@ -72,24 +69,23 @@ if __name__ == "__main__":
         bars_data = load_data_from_json(path)
     except FileNotFoundError:
         print("File can not be found. Make sure you entered right path")
+    except ValueError:
+        print("That is not JSON-file")
     else:
-        if bars_data is None:
-            print("That is not JSON-file")
-        else:
-            try:
-                print("Input your coordinates")
-                user_longitude = float(input("Longitude:"))
-                user_latitude = float(input("Latitude:"))
-                closest_bar = get_closest_bar(bars_data,
-                                              user_longitude,
-                                              user_latitude)
-                print("Ur coordinates: ", user_longitude, " ", user_latitude)
-                print("closest: ", print_bar(closest_bar))
-            except ValueError:
+        try:
+            print("Input your coordinates")
+            user_longitude = float(input("Longitude:"))
+            user_latitude = float(input("Latitude:"))
+            closest_bar = get_closest_bar(bars_data,
+                                          user_longitude,
+                                          user_latitude)
+            print("Ur coordinates: ", user_longitude, " ", user_latitude)
+            print("closest: ", print_bar(closest_bar))
+        except ValueError:
                 print("Your coordinates was input in wrong format. ",
                       "Example: 34.34256")
 
-            biggest_bar = get_biggest_bar(bars_data)
-            print("Bar with most seats: ", print_bar(biggest_bar))
-            smallest_bar = get_smallest_bar(bars_data)
-            print("Bar with least seats: ", print_bar(smallest_bar))
+        biggest_bar = get_biggest_bar(bars_data)
+        print("Bar with most seats: ", print_bar(biggest_bar))
+        smallest_bar = get_smallest_bar(bars_data)
+        print("Bar with least seats: ", print_bar(smallest_bar))
