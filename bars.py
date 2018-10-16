@@ -63,6 +63,17 @@ def get_args():
     return parser.parse_args()
 
 
+def get_user_input_data():
+    try:
+        user_input = []
+        print("Input your coordinates")
+        user_input.append(float(input("Longitude:")))
+        user_input.append(float(input("Latitude:")))
+        return user_input
+    except ValueError:
+        return None
+
+
 if __name__ == "__main__":
     try:
         path = get_args().file
@@ -72,19 +83,16 @@ if __name__ == "__main__":
     except ValueError:
         print("That is not JSON-file")
     else:
-        try:
-            print("Input your coordinates")
-            user_longitude = float(input("Longitude:"))
-            user_latitude = float(input("Latitude:"))
+        user_coordinates = get_user_input_data()
+        if user_coordinates is None:
+            print("Coordinates was input in wrong format."
+                  "Use this format instead: 34.66661")
+        else:
             closest_bar = get_closest_bar(bars_data,
-                                          user_longitude,
-                                          user_latitude)
-            print("Ur coordinates: ", user_longitude, " ", user_latitude)
+                                          user_coordinates[0],
+                                          user_coordinates[1])
+            print("Ur coordinates: ", user_coordinates)
             print("closest: ", print_bar(closest_bar))
-        except ValueError:
-                print("Your coordinates was input in wrong format. ",
-                      "Example: 34.34256")
-
         biggest_bar = get_biggest_bar(bars_data)
         print("Bar with most seats: ", print_bar(biggest_bar))
         smallest_bar = get_smallest_bar(bars_data)
