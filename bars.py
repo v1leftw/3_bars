@@ -8,23 +8,19 @@ def load_data_from_json(filepath):
     if os.path.isfile(filepath):
         with open(filepath, "r", encoding="utf8") as json_file:
             return json.load(json_file)
-    else:
-        return None
 
 
 def get_biggest_bar(parsed_data):
     return max(
-        parsed_data["features"],
-        key=lambda item:
-        item["properties"]["Attributes"]["SeatsCount"]
+        parsed_data,
+        key=lambda item: item["properties"]["Attributes"]["SeatsCount"]
     )
 
 
 def get_smallest_bar(parsed_data):
     return min(
-        parsed_data["features"],
-        key=lambda item:
-        item["properties"]["Attributes"]["SeatsCount"]
+        parsed_data,
+        key=lambda item: item["properties"]["Attributes"]["SeatsCount"]
     )
 
 
@@ -44,7 +40,7 @@ def get_distance(lon_user, lat_user, lon_src, lat_src):
 
 def get_closest_bar(parsed_data, longitude, latitude):
     return min(
-        parsed_data["features"],
+        parsed_data,
         key=lambda item:
         get_distance(
             longitude,
@@ -79,7 +75,7 @@ def get_user_input_data():
 if __name__ == "__main__":
     path = get_args().file
     try:
-        bars_data = load_data_from_json(path)
+        bars_data = load_data_from_json(path)["features"]
         if bars_data is None:
             exit("File can not be found. Make sure you entered right path")
     except ValueError:
