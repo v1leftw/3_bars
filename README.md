@@ -8,10 +8,6 @@ Information that user can get:
 
 JSON can be taken from [data.mos.ru](https://data.mos.ru)
 
-## Motivation ##
-
-Project has been done in learning purposes - [task is here](https://devman.org/challenges/3/)
-
 ## Installation ##
 
 Python 3.5 needed
@@ -33,3 +29,6 @@ Bar with most seats:  Спорт бар «Красная машина»
 Bar with least seats:  БАР. СОКИ
 ```
 
+# Project Goals
+
+The code is written for educational purposes. Training course for web-developers - [DEVMAN.org](https://devman.org)
